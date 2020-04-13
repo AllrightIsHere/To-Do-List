@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import styled from "styled-components";
 
 import ToDoList from './ToDoList';
-import ToDoListActionButton from './ToDoListActionButton';
+import ToDoCreate from './ToDoCreate';
 import { sort } from './../actions';
 
 const ListContainer = styled.div`
@@ -13,7 +13,7 @@ const ListContainer = styled.div`
   flex-direction: row;
 `;
 
-class App extends Component {
+class App extends PureComponent {
 
   onDragEnd = (result) => {
     const { destination, source, draggableId, type } = result;
@@ -58,7 +58,7 @@ class App extends Component {
                   />
                 ))}
                 {provided.placeholder}
-                <ToDoListActionButton list />
+                <ToDoCreate list />
               </ListContainer>
             )}
           </Droppable>

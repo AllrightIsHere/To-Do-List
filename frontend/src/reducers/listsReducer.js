@@ -1,55 +1,53 @@
 import { CONSTANTS } from './../actions';
-
-let listID = 3;
-let cardId = 8;
+import { v4 as uuid } from 'uuid';
 
 const initialState = [
     {
         title: "Aprovados",
-        id: `list-${0}`,
+        id: `list-${uuid()}`,
         cards: [
             {
-                id: `card-${0}`,
+                id: `card-${uuid()}`,
                 text: "card 0"
             },
             {
-                id: `card-${1}`,
+                id: `card-${uuid()}`,
                 text: "card 1"
             }
         ]
     },
     {
         title: "Em andamento",
-        id: `list-${1}`,
+        id: `list-${uuid()}`,
         cards: [
             {
-                id: `card-${2}`,
+                id: `card-${uuid()}`,
                 text: "card 0"
             },
             {
-                id: `card-${3}`,
+                id: `card-${uuid()}`,
                 text: "card 1"
             },
             {
-                id: `card-${4}`,
+                id: `card-${uuid()}`,
                 text: "card 2"
             }
         ]
     },
     {
         title: "Concluído",
-        id: `list-${2}`,
+        id: `list-${uuid()}`,
         cards: [
             {
-                id: `card-${5}`,
+                id: `card-${uuid()}`,
                 text: "card 0"
             },
             {
-                id: `card-${6}`,
+                id: `card-${uuid()}`,
                 text: "card 1"
             },
             {
-                id: `card-${7}`,
+                id: `card-${uuid()}`,
                 text: "card 2"
             }
         ]
@@ -62,16 +60,14 @@ const listsReducer = (state = initialState, action) => {
             const newList = {
                 title: action.payload,
                 cards: [],
-                id: `list-${listID}`
+                id: `list-${uuid()}`
             }
-            listID+=1;
             return [...state, newList];
         case CONSTANTS.ADD_CARD: {
             const newCard = {
                 text: action.payload.text,
-                id: `card-${cardId}`
+                id: `card-${uuid()}`
             }
-            cardId+=1;
 
             const newState = state.map(list => {
                 if(list.id === action.payload.id){
@@ -87,7 +83,7 @@ const listsReducer = (state = initialState, action) => {
             return newState;
         }
 
-        case CONSTANTS.DRAG_HAPPENED:
+        case CONSTANTS.DRAG_HAPPENED: {
             const {
                 droppableIdStart,
                 droppableIdEnd,
@@ -125,6 +121,44 @@ const listsReducer = (state = initialState, action) => {
             }
 
             return newState;
+        }
+
+        case CONSTANTS.DELETE_CARD: {
+            const { id, listID } = action.payload;
+
+            return state.map(list => {
+                if (list.id === listID) {
+                    const newCards = list.cards.filter(card => card.id !== id);
+                    return { ...list, cards: newCards };
+                } else {
+                    return list;
+                }
+            });
+        }
+
+        case CONSTANTS.EDIT_CARD: {
+            const { id, listID, newText } = action.payload;
+
+            return state.map(list => {
+                if(list.id === listID){
+                    const newCards = list.cards.map(card => {
+                        if(card.id === id) {
+                            card.text = newText;
+                            return card;
+                        }
+                        return card;
+                    });
+                    return { ...list, cards: newCards };
+                }
+                return list;
+            });
+        }
+
+        case CONSTANTS.DELETE_LIST: {
+            const { listID } = action.payload;
+
+            return state.filter(list => list.id !== listID);
+        }
 
         default:
             return state;
